@@ -5,12 +5,13 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import confusion_matrix, classification_report, roc_curve, auc
+from sklearn.metrics import confusion_matrix, roc_curve, auc
 from xgboost import XGBClassifier
 
 st.set_page_config(page_title="Parkinson's Early Detection", layout="wide")
 
-df = pd.read_csv("parkinsons.data")
+# Load dataset with proper encoding to avoid UTF-8 error
+df = pd.read_csv("parkinsons.data", encoding='latin1')
 df.drop(columns=["name"], inplace=True)
 
 X = df.drop("status", axis=1)
@@ -39,10 +40,9 @@ model.fit(X_train_scaled, y_train)
 y_pred = model.predict(X_test_scaled)
 y_prob = model.predict_proba(X_test_scaled)[:, 1]
 
-st.title("?? Parkinson’s Disease Early Detection using XGBoost")
+st.title("ðŸ§  Parkinsonâ€™s Disease Early Detection using XGBoost")
 
 st.subheader("Model Evaluation")
-
 col1, col2 = st.columns(2)
 
 with col1:
@@ -65,7 +65,6 @@ with col2:
     st.pyplot(fig)
 
 st.subheader("Feature Importance")
-
 fig, ax = plt.subplots(figsize=(8, 6))
 importance = model.feature_importances_
 indices = np.argsort(importance)[::-1][:10]
@@ -73,8 +72,7 @@ ax.barh(X.columns[indices], importance[indices])
 ax.invert_yaxis()
 st.pyplot(fig)
 
-st.subheader("Predict Parkinson’s Disease")
-
+st.subheader("Predict Parkinsonâ€™s Disease")
 input_data = []
 
 for feature in X.columns:
@@ -88,6 +86,6 @@ if st.button("Predict"):
     probability = model.predict_proba(input_scaled)[0][1]
 
     if prediction[0] == 1:
-        st.error(f"Parkinson’s Disease Detected (Probability: {probability:.2f})")
+        st.error(f"Parkinsonâ€™s Disease Detected (Probability: {probability:.2f})")
     else:
         st.success(f"Healthy Individual (Probability: {1 - probability:.2f})")
